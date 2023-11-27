@@ -1,0 +1,37 @@
+from flask import Flask, render_template, request, redirect, url_for
+import os
+
+app = Flask(__name__)
+
+# Caminho para o arquivo de armazenamento das tarefas
+tasks_file = 'tasks.txt'
+
+# Lista de tarefas como um exemplo de dados
+tasks = []
+
+# Função para carregar as tarefas do arquivo
+def load_tasks():
+    if os.path.exists(tasks_file):
+        with open(tasks_file, 'r') as file:
+            return file.read().splitlines()
+    return []
+
+# Função para salvar as tarefas no arquivo
+def save_tasks():
+    with open(tasks_file, 'w') as file:
+        for task in tasks:
+            file.write(task + '\n')
+
+# Carrega as tarefas iniciais do arquivo
+tasks = load_tasks()
+
+@app.route('/')
+def index():
+    return render_template('index.html', tasks=tasks)
+
+@app.route('/add_task', methods=['POST'])
+def add_task():
+    task = request.form.get('task')
+    if task:
+        tasks.append(task)
+       
